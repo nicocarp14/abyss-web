@@ -18,9 +18,21 @@ function HelmetArt({ color = '#ff5a00', dark = '#171717', label = 'Casco ABYSS' 
   </svg>
 }
 
+function GearArt({ kind = 'jacket', color = '#242424', label = 'Indumentaria ABYSS' }) {
+  const stroke = '#e8e5dc'
+  const common = { fill: color, stroke, strokeOpacity: '.26', strokeWidth: '3', strokeLinejoin: 'round' }
+  const art = {
+    jacket: <><path {...common} d="M152 54l57 22 59-22 50 61-35 30-23-30v132H160V115l-23 30-35-30z"/><path d="M209 76v171M180 55l29 47 29-47M160 140h100" stroke={stroke} strokeOpacity=".38" strokeWidth="3" fill="none"/></>,
+    gloves: <><path {...common} d="M139 228l-18-81c-3-14 15-20 20-7l15 38-22-89c-3-13 15-19 19-6l25 72-17-91c-2-14 17-18 20-5l20 89-2-91c0-14 20-14 21 0l9 89 12-71c3-13 22-9 20 5l-10 79c-3 24-17 54-45 62l-57 17z"/><path {...common} d="M278 228l18-81c3-14-15-20-20-7l-15 38 22-89c3-13-15-19-19-6l-25 72 17-91c2-14-17-18-20-5l-20 89 2-91c0-14-20-14-21 0l-9 89-12-71c-3-13-22-9-20 5l10 79c3 24 17 54 45 62l57 17z"/></>,
+    pants: <><path {...common} d="M142 46h136l-10 95-28 111h-46l15-108-20-43-15 151h-47l1-111z"/><path d="M210 53l-1 91M145 102h128" stroke={stroke} strokeOpacity=".35" strokeWidth="3" fill="none"/></>,
+    shirt: <><path {...common} d="M158 57l51 22 53-22 51 42-26 44-30-20v128H160V123l-29 20-27-44z"/><path d="M184 63c1 22 14 33 25 33s24-11 26-33" stroke={stroke} strokeOpacity=".38" strokeWidth="3" fill="none"/></>,
+  }
+  return <svg className="gear-art" viewBox="0 0 420 300" role="img" aria-label={label}><ellipse cx="210" cy="263" rx="112" ry="13" fill="#000" opacity=".45"/>{art[kind] || art.jacket}</svg>
+}
+
 // La cabecera concentra navegación y el acceso al carrito.
 function Header({ cartCount, onCartOpen }) {
-  return <header className="header"><Link className="wordmark" to="/" aria-label="ABYSS, inicio">ABYSS<span>®</span></Link><nav aria-label="Navegación principal"><NavLink to="/catalogo">Cascos</NavLink><NavLink to="/nosotros">Nosotros</NavLink><NavLink to="/contacto">Contacto</NavLink></nav><button className="cart-trigger" onClick={onCartOpen} aria-label={`Abrir carrito, ${cartCount} productos`}>BOLSA <span>{String(cartCount).padStart(2, '0')}</span><b>↗</b></button></header>
+  return <header className="header"><Link className="wordmark" to="/" aria-label="ABYSS, inicio">ABYSS<span>®</span></Link><nav aria-label="Navegación principal"><NavLink to="/catalogo">Productos</NavLink><NavLink to="/nosotros">Nosotros</NavLink><NavLink to="/contacto">Contacto</NavLink></nav><button className="cart-trigger" onClick={onCartOpen} aria-label={`Abrir carrito, ${cartCount} productos`}>BOLSA <span>{String(cartCount).padStart(2, '0')}</span><b>↗</b></button></header>
 }
 
 // Hero: primer impacto y acceso rápido al catálogo.
@@ -31,26 +43,30 @@ function Hero() {
 
 // Tarjeta de catálogo, recibe el casco y la acción para agregarlo.
 function ProductCard({ product, onAdd }) {
-  return <article className="product-card"><div className={`product-art ${product.art}`}><span className="product-tag">{product.tag}</span><HelmetArt color={product.color} dark={product.dark} label={`${product.name}, ${product.type}`}/><button className="quick-add" onClick={() => onAdd(product)} aria-label={`Agregar ${product.name} al carrito`}>+</button></div><div className="product-info"><div><p className="product-type">{product.type} / {product.code}</p><h3>{product.name}</h3></div><strong>{formatPrice(product.price)}</strong></div><div className="product-detail"><span>COLORES {product.colors.length}</span><div>{product.colors.slice(0, 3).map((color) => <i key={color} style={{ backgroundColor: color }} title={color}/>)}</div><span>TALLES XS—XXL</span></div></article>
+  const isGear = product.category === 'Indumentaria'
+  return <article className="product-card"><div className={`product-art ${product.art}`}><span className="product-tag">{product.tag}</span>{isGear ? <GearArt kind={product.gear} color={product.color} label={`${product.name}, ${product.type}`}/> : <HelmetArt color={product.color} dark={product.dark} label={`${product.name}, ${product.type}`}/>}<button className="quick-add" onClick={() => onAdd(product)} aria-label={`Agregar ${product.name} al carrito`}>+</button></div><div className="product-info"><div><p className="product-type">{product.type} / {product.code}</p><h3>{product.name}</h3></div><strong>{formatPrice(product.price)}</strong></div><div className="product-detail"><span>COLORES {product.colors.length}</span><div>{product.colors.slice(0, 3).map((color) => <i key={color} style={{ backgroundColor: color }} title={color}/>)}</div><span>TALLES {product.sizeRange || 'XS—XXL'}</span></div></article>
 }
 
 // Catálogo con filtros y ordenamiento controlados por el estado de React.
 function ProductList({ onAdd }) {
-  const [type, setType] = useState('Todos')
+  const [category, setCategory] = useState('Todos')
+  const [helmetType, setHelmetType] = useState('Todos')
   const [sort, setSort] = useState('featured')
   const visibleProducts = useMemo(() => {
-    const filtered = type === 'Todos' ? [...products] : products.filter((product) => product.type === type)
+    const inCategory = category === 'Todos' ? [...products] : products.filter((product) => product.category === category)
+    const filtered = category === 'Cascos' && helmetType !== 'Todos' ? inCategory.filter((product) => product.type === helmetType) : inCategory
     if (sort === 'low') filtered.sort((a, b) => a.price - b.price)
     if (sort === 'high') filtered.sort((a, b) => b.price - a.price)
     return filtered
-  }, [type, sort])
-  return <section className="catalog section-wrap" id="catalogo"><div className="section-heading"><div><p className="eyebrow"><i/> EQUIPATE PARA LO QUE VIENE</p><h2>LA COLECCIÓN<span>.</span></h2></div><p>Ocho formas de ver el camino.<br/>Una sola forma de vivirlo.</p></div><div className="catalog-toolbar"><div className="filter-list" aria-label="Filtrar por tipo">{['Todos', 'Integral', 'Modular', 'Abierto'].map((item) => <button key={item} className={type === item ? 'filter active' : 'filter'} onClick={() => setType(item)}>{item.toUpperCase()}</button>)}</div><label className="sort-label">ORDENAR <select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Ordenar productos por precio"><option value="featured">Destacados</option><option value="low">Precio: menor a mayor</option><option value="high">Precio: mayor a menor</option></select></label></div><div className="product-grid">{visibleProducts.map((product) => <ProductCard key={product.id} product={product} onAdd={onAdd}/>)}</div><div className="catalog-foot"><span>{String(visibleProducts.length).padStart(2, '0')} MODELOS DISPONIBLES</span><span>PRECIOS EN ARS · IVA INCLUIDO</span></div></section>
+  }, [category, helmetType, sort])
+  function selectCategory(nextCategory) { setCategory(nextCategory); setHelmetType('Todos') }
+  return <section className="catalog section-wrap" id="catalogo"><div className="section-heading"><div><p className="eyebrow"><i/> EQUIPATE PARA LO QUE VIENE</p><h2>LA COLECCIÓN<span>.</span></h2></div><p>Cascos e indumentaria para cada ruta.<br/>Un solo equipo para vivirla.</p></div><div className="catalog-toolbar"><div className="filter-groups"><div className="filter-list" aria-label="Filtrar por categoría">{['Todos', 'Cascos', 'Indumentaria'].map((item) => <button key={item} className={category === item ? 'filter active' : 'filter'} onClick={() => selectCategory(item)}>{item.toUpperCase()}</button>)}</div>{category === 'Cascos' && <div className="filter-list helmet-filters" aria-label="Filtrar cascos por tipo">{['Todos', 'Integral', 'Modular', 'Abierto', 'Enduro'].map((item) => <button key={item} className={helmetType === item ? 'filter active' : 'filter'} onClick={() => setHelmetType(item)}>{item.toUpperCase()}</button>)}</div>}</div><label className="sort-label">ORDENAR <select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Ordenar productos por precio"><option value="featured">Destacados</option><option value="low">Precio: menor a mayor</option><option value="high">Precio: mayor a menor</option></select></label></div><div className="product-grid">{visibleProducts.map((product) => <ProductCard key={product.id} product={product} onAdd={onAdd}/>)}</div><div className="catalog-foot"><span>{String(visibleProducts.length).padStart(2, '0')} MODELOS DISPONIBLES</span><span>PRECIOS EN ARS · IVA INCLUIDO</span></div></section>
 }
 
 // El carrito se muestra como panel lateral y permite cambiar cantidades.
 function Cart({ open, items, onClose, onChange, onRemove }) {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  return <><button className={`cart-scrim ${open ? 'visible' : ''}`} onClick={onClose} aria-label="Cerrar carrito" tabIndex={open ? 0 : -1}/><aside className={`cart-panel ${open ? 'open' : ''}`} aria-label="Carrito de compras" aria-hidden={!open}><div className="cart-head"><div><p className="eyebrow"><i/> TU EQUIPO</p><h2>LA BOLSA<span>.</span></h2></div><button className="close-cart" onClick={onClose} aria-label="Cerrar carrito">×</button></div>{items.length === 0 ? <div className="empty-cart"><span>∅</span><p>TU BOLSA ESTÁ VACÍA.</p><Link to="/catalogo" onClick={onClose}>EXPLORAR CASCOS ↘</Link></div> : <><div className="cart-items">{items.map((item) => <div className="cart-item" key={item.id}><div className="cart-thumb"><HelmetArt color={item.color} dark={item.dark}/></div><div className="cart-item-copy"><p>{item.type} / {item.name}</p><strong>{formatPrice(item.price)}</strong><div className="quantity"><button onClick={() => onChange(item.id, -1)} aria-label={`Restar ${item.name}`}>−</button><span>{item.quantity}</span><button onClick={() => onChange(item.id, 1)} aria-label={`Sumar ${item.name}`}>+</button><button className="remove-item" onClick={() => onRemove(item.id)}>ELIMINAR</button></div></div></div>)}</div><div className="cart-summary"><div><span>ENVÍO</span><strong>GRATIS</strong></div><div className="total-line"><span>TOTAL</span><strong>{formatPrice(total)}</strong></div><button className="button button-orange checkout" onClick={() => alert('¡Gracias! El checkout estará disponible muy pronto.')}>CONTINUAR COMPRA <span>↗</span></button><p>COMPRA SEGURA · CAMBIOS GRATIS</p></div></>}</aside></>
+  return <><button className={`cart-scrim ${open ? 'visible' : ''}`} onClick={onClose} aria-label="Cerrar carrito" tabIndex={open ? 0 : -1}/><aside className={`cart-panel ${open ? 'open' : ''}`} aria-label="Carrito de compras" aria-hidden={!open}><div className="cart-head"><div><p className="eyebrow"><i/> TU EQUIPO</p><h2>LA BOLSA<span>.</span></h2></div><button className="close-cart" onClick={onClose} aria-label="Cerrar carrito">×</button></div>{items.length === 0 ? <div className="empty-cart"><span>∅</span><p>TU BOLSA ESTÁ VACÍA.</p><Link to="/catalogo" onClick={onClose}>EXPLORAR PRODUCTOS ↘</Link></div> : <><div className="cart-items">{items.map((item) => <div className="cart-item" key={item.id}><div className="cart-thumb">{item.category === 'Indumentaria' ? <GearArt kind={item.gear} color={item.color}/> : <HelmetArt color={item.color} dark={item.dark}/>}</div><div className="cart-item-copy"><p>{item.type} / {item.name}</p><strong>{formatPrice(item.price)}</strong><div className="quantity"><button onClick={() => onChange(item.id, -1)} aria-label={`Restar ${item.name}`}>−</button><span>{item.quantity}</span><button onClick={() => onChange(item.id, 1)} aria-label={`Sumar ${item.name}`}>+</button><button className="remove-item" onClick={() => onRemove(item.id)}>ELIMINAR</button></div></div></div>)}</div><div className="cart-summary"><div><span>ENVÍO</span><strong>GRATIS</strong></div><div className="total-line"><span>TOTAL</span><strong>{formatPrice(total)}</strong></div><button className="button button-orange checkout" onClick={() => alert('¡Gracias! El checkout estará disponible muy pronto.')}>CONTINUAR COMPRA <span>↗</span></button><p>COMPRA SEGURA · CAMBIOS GRATIS</p></div></>}</aside></>
 }
 
 // Bloques informativos breves de la marca y sus beneficios.
@@ -76,8 +92,9 @@ function Footer() { return <footer className="footer"><Link className="wordmark"
 // Precio con formato local argentino para evitar repetir lógica en la interfaz.
 function formatPrice(price) { return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(price) }
 
-function Home() {
-  return <><Hero/><section className="home-catalog section-wrap"><div><p className="eyebrow"><i/> ENCONTRÁ TU PRÓXIMO CASCO</p><h1>EQUIPATE PARA<br/>IR <em>MÁS LEJOS.</em></h1></div><Link className="button button-orange" to="/catalogo">EXPLORAR CATÁLOGO <span>↗</span></Link></section><Benefits/></>
+function Home({ onAdd }) {
+  const featured = products.filter((product) => [1, 3, 9, 10].includes(product.id))
+  return <><Hero/><section className="home-catalog section-wrap"><div><p className="eyebrow"><i/> CASCOS E INDUMENTARIA RIDER</p><h1>EQUIPATE PARA<br/>IR <em>MÁS LEJOS.</em></h1></div><Link className="button button-orange" to="/catalogo">EXPLORAR CATÁLOGO <span>↗</span></Link></section><section className="featured section-wrap"><div className="section-heading"><div><p className="eyebrow"><i/> SELECCIÓN ABYSS</p><h2>DESTACADOS<span>.</span></h2></div><p>Tu equipo empieza acá.<br/>Elegí cómo salir a la ruta.</p></div><div className="product-grid featured-grid">{featured.map((product) => <ProductCard key={product.id} product={product} onAdd={onAdd}/>)}</div><Link className="featured-link" to="/catalogo">VER TODO EL EQUIPO <span>↗</span></Link></section><Benefits/></>
 }
 
 function NotFound() {
@@ -102,7 +119,7 @@ function App() {
   function addToCart(product) { setCart((current) => { const exists = current.find((item) => item.id === product.id); return exists ? current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }] }); setCartOpen(true) }
   function changeQuantity(id, amount) { setCart((current) => current.map((item) => item.id === id ? { ...item, quantity: item.quantity + amount } : item).filter((item) => item.quantity > 0)) }
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-  return <><ScrollToTop/><Header cartCount={cartCount} onCartOpen={() => setCartOpen(true)}/><main><Routes><Route path="/" element={<Home/>}/><Route path="/catalogo" element={<ProductList onAdd={addToCart}/>}/><Route path="/nosotros" element={<About/>}/><Route path="/contacto" element={<ContactForm/>}/><Route path="*" element={<NotFound/>}/></Routes></main><Footer/><Cart open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} onRemove={(id) => setCart((current) => current.filter((item) => item.id !== id))}/></>
+  return <><ScrollToTop/><Header cartCount={cartCount} onCartOpen={() => setCartOpen(true)}/><main><Routes><Route path="/" element={<Home onAdd={addToCart}/>}/><Route path="/catalogo" element={<ProductList onAdd={addToCart}/>}/><Route path="/nosotros" element={<About/>}/><Route path="/contacto" element={<ContactForm/>}/><Route path="*" element={<NotFound/>}/></Routes></main><Footer/><Cart open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} onRemove={(id) => setCart((current) => current.filter((item) => item.id !== id))}/></>
 }
 
 export default App
