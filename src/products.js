@@ -1,4 +1,4 @@
-/ Datos editables del catálogo. Separarlos facilita agregar modelos sin tocar la UI.
+
 export const products = [
   { id: 1, name: 'VORTEX R1', type: 'Integral', code: 'VTX-R1', price: 289900, colors: ['#ff5a00', '#171717', '#e8e5dc'], color: '#ff5a00', dark: '#271307', tag: 'BEST SELLER', art: 'art-orange' },
   { id: 2, name: 'SHADOW X', type: 'Integral', code: 'SHD-X', price: 319900, colors: ['#131313', '#777777'], color: '#353535', dark: '#090909', tag: 'NUEVO', art: 'art-shadow' },
