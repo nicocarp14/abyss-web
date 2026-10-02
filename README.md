@@ -13,7 +13,7 @@ npm run dev
 
 - `/`: inicio y acceso al catálogo.
 - `/catalogo`: productos, filtros, ordenamiento y carrito.
-- `/nosotros`: manifiesto de la marca.
+- `/nosotros`: informacion sobre nosotros.
 - `/contacto`: formulario de contacto.
 - Cualquier otra ruta muestra una página 404.
 

@@ -20,7 +20,7 @@ function HelmetArt({ color = '#ff5a00', dark = '#171717', label = 'Casco ABYSS' 
 
 // La cabecera concentra navegación y el acceso al carrito.
 function Header({ cartCount, onCartOpen }) {
-  return <header className="header"><Link className="wordmark" to="/" aria-label="ABYSS, inicio">ABYSS<span>®</span></Link><nav aria-label="Navegación principal"><NavLink to="/catalogo">Cascos</NavLink><NavLink to="/nosotros">Manifiesto</NavLink><NavLink to="/contacto">Contacto</NavLink></nav><button className="cart-trigger" onClick={onCartOpen} aria-label={`Abrir carrito, ${cartCount} productos`}>BOLSA <span>{String(cartCount).padStart(2, '0')}</span><b>↗</b></button></header>
+  return <header className="header"><Link className="wordmark" to="/" aria-label="ABYSS, inicio">ABYSS<span>®</span></Link><nav aria-label="Navegación principal"><NavLink to="/catalogo">Cascos</NavLink><NavLink to="/nosotros">Nosotros</NavLink><NavLink to="/contacto">Contacto</NavLink></nav><button className="cart-trigger" onClick={onCartOpen} aria-label={`Abrir carrito, ${cartCount} productos`}>BOLSA <span>{String(cartCount).padStart(2, '0')}</span><b>↗</b></button></header>
 }
 
 // Hero: primer impacto y acceso rápido al catálogo.
