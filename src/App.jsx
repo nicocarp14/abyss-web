@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { products } from './products.js'
 import './App.css'
 
@@ -19,7 +20,7 @@ function HelmetArt({ color = '#ff5a00', dark = '#171717', label = 'Casco ABYSS' 
 
 // La cabecera concentra navegación y el acceso al carrito.
 function Header({ cartCount, onCartOpen }) {
-  return <header className="header"><a className="wordmark" href="#inicio" aria-label="ABYSS, inicio">ABYSS<span>®</span></a><nav aria-label="Navegación principal"><a href="#catalogo">Cascos</a><a href="#nosotros">Manifiesto</a><a href="#contacto">Contacto</a></nav><button className="cart-trigger" onClick={onCartOpen} aria-label={`Abrir carrito, ${cartCount} productos`}>BOLSA <span>{String(cartCount).padStart(2, '0')}</span><b>↗</b></button></header>
+  return <header className="header"><Link className="wordmark" to="/" aria-label="ABYSS, inicio">ABYSS<span>®</span></Link><nav aria-label="Navegación principal"><NavLink to="/catalogo">Cascos</NavLink><NavLink to="/nosotros">Manifiesto</NavLink><NavLink to="/contacto">Contacto</NavLink></nav><button className="cart-trigger" onClick={onCartOpen} aria-label={`Abrir carrito, ${cartCount} productos`}>BOLSA <span>{String(cartCount).padStart(2, '0')}</span><b>↗</b></button></header>
 }
 
 // Hero: primer impacto y acceso rápido al catálogo.
@@ -49,7 +50,7 @@ function ProductList({ onAdd }) {
 // El carrito se muestra como panel lateral y permite cambiar cantidades.
 function Cart({ open, items, onClose, onChange, onRemove }) {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  return <><button className={`cart-scrim ${open ? 'visible' : ''}`} onClick={onClose} aria-label="Cerrar carrito" tabIndex={open ? 0 : -1}/><aside className={`cart-panel ${open ? 'open' : ''}`} aria-label="Carrito de compras" aria-hidden={!open}><div className="cart-head"><div><p className="eyebrow"><i/> TU EQUIPO</p><h2>LA BOLSA<span>.</span></h2></div><button className="close-cart" onClick={onClose} aria-label="Cerrar carrito">×</button></div>{items.length === 0 ? <div className="empty-cart"><span>∅</span><p>TU BOLSA ESTÁ VACÍA.</p><button onClick={onClose}>EXPLORAR CASCOS ↘</button></div> : <><div className="cart-items">{items.map((item) => <div className="cart-item" key={item.id}><div className="cart-thumb"><HelmetArt color={item.color} dark={item.dark}/></div><div className="cart-item-copy"><p>{item.type} / {item.name}</p><strong>{formatPrice(item.price)}</strong><div className="quantity"><button onClick={() => onChange(item.id, -1)} aria-label={`Restar ${item.name}`}>−</button><span>{item.quantity}</span><button onClick={() => onChange(item.id, 1)} aria-label={`Sumar ${item.name}`}>+</button><button className="remove-item" onClick={() => onRemove(item.id)}>ELIMINAR</button></div></div></div>)}</div><div className="cart-summary"><div><span>ENVÍO</span><strong>GRATIS</strong></div><div className="total-line"><span>TOTAL</span><strong>{formatPrice(total)}</strong></div><button className="button button-orange checkout" onClick={() => alert('¡Gracias! El checkout estará disponible muy pronto.')}>CONTINUAR COMPRA <span>↗</span></button><p>COMPRA SEGURA · CAMBIOS GRATIS</p></div></>}</aside></>
+  return <><button className={`cart-scrim ${open ? 'visible' : ''}`} onClick={onClose} aria-label="Cerrar carrito" tabIndex={open ? 0 : -1}/><aside className={`cart-panel ${open ? 'open' : ''}`} aria-label="Carrito de compras" aria-hidden={!open}><div className="cart-head"><div><p className="eyebrow"><i/> TU EQUIPO</p><h2>LA BOLSA<span>.</span></h2></div><button className="close-cart" onClick={onClose} aria-label="Cerrar carrito">×</button></div>{items.length === 0 ? <div className="empty-cart"><span>∅</span><p>TU BOLSA ESTÁ VACÍA.</p><Link to="/catalogo" onClick={onClose}>EXPLORAR CASCOS ↘</Link></div> : <><div className="cart-items">{items.map((item) => <div className="cart-item" key={item.id}><div className="cart-thumb"><HelmetArt color={item.color} dark={item.dark}/></div><div className="cart-item-copy"><p>{item.type} / {item.name}</p><strong>{formatPrice(item.price)}</strong><div className="quantity"><button onClick={() => onChange(item.id, -1)} aria-label={`Restar ${item.name}`}>−</button><span>{item.quantity}</span><button onClick={() => onChange(item.id, 1)} aria-label={`Sumar ${item.name}`}>+</button><button className="remove-item" onClick={() => onRemove(item.id)}>ELIMINAR</button></div></div></div>)}</div><div className="cart-summary"><div><span>ENVÍO</span><strong>GRATIS</strong></div><div className="total-line"><span>TOTAL</span><strong>{formatPrice(total)}</strong></div><button className="button button-orange checkout" onClick={() => alert('¡Gracias! El checkout estará disponible muy pronto.')}>CONTINUAR COMPRA <span>↗</span></button><p>COMPRA SEGURA · CAMBIOS GRATIS</p></div></>}</aside></>
 }
 
 // Bloques informativos breves de la marca y sus beneficios.
@@ -59,7 +60,7 @@ function Benefits() {
 
 // Todas las vistas comparten el mismo marco y carrito persistente.
 function About() {
-  return <section className="about section-wrap" id="nosotros"><p className="eyebrow"><i/> NO ES SOLO LLEGAR</p><div className="about-content"><h2>EL CAMINO<br/>ES <em>TODO.</em></h2><div><p>Creemos en salir sin mapa, en el viento que despeja todo y en esa curva que te hace volver a casa distinto. Creamos equipo para vivir cada kilómetro con intensidad y volver por más.</p><a href="#contacto">CONOCÉ ABYSS <span>↗</span></a></div><span className="about-symbol">A.</span></div></section>
+  return <section className="about section-wrap"><p className="eyebrow"><i/> NO ES SOLO LLEGAR</p><div className="about-content"><h2>EL CAMINO<br/>ES <em>TODO.</em></h2><div><p>Creemos en salir sin mapa, en el viento que despeja todo y en esa curva que te hace volver a casa distinto. Creamos equipo para vivir cada kilómetro con intensidad y volver por más.</p><Link to="/contacto">CONOCÉ ABYSS <span>↗</span></Link></div><span className="about-symbol">A.</span></div></section>
 }
 
 // Formulario accesible con validación nativa y mensaje de confirmación.
@@ -70,10 +71,28 @@ function ContactForm() {
   
 }
 
-function Footer() { return <footer className="footer"><a className="wordmark" href="#inicio">ABYSS<span>®</span></a><span>EQUIPAMIENTO PARA IR MÁS LEJOS.</span><span>BUENOS AIRES, ARGENTINA · © 2025 ABYSS</span><a href="#inicio" aria-label="Volver arriba">VOLVER ARRIBA ↑</a></footer> }
+function Footer() { return <footer className="footer"><Link className="wordmark" to="/">ABYSS<span>®</span></Link><span>EQUIPAMIENTO PARA IR MÁS LEJOS.</span><span>BUENOS AIRES, ARGENTINA · © 2025 ABYSS</span><Link to="/" aria-label="Volver al inicio">VOLVER AL INICIO ↑</Link></footer> }
 
 // Precio con formato local argentino para evitar repetir lógica en la interfaz.
 function formatPrice(price) { return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(price) }
+
+function Home() {
+  return <><Hero/><section className="home-catalog section-wrap"><div><p className="eyebrow"><i/> ENCONTRÁ TU PRÓXIMO CASCO</p><h1>EQUIPATE PARA<br/>IR <em>MÁS LEJOS.</em></h1></div><Link className="button button-orange" to="/catalogo">EXPLORAR CATÁLOGO <span>↗</span></Link></section><Benefits/></>
+}
+
+function NotFound() {
+  return <section className="not-found"><p className="eyebrow"><i/> RUTA NO ENCONTRADA</p><h1>404<span>.</span></h1><p>Esta página no está en el mapa.</p><Link className="button button-orange" to="/">VOLVER AL INICIO <span>↗</span></Link></section>
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+
+  return null
+}
 
 function App() {
   // Inicializamos el carrito desde el navegador y lo guardamos ante cada cambio.
@@ -83,7 +102,7 @@ function App() {
   function addToCart(product) { setCart((current) => { const exists = current.find((item) => item.id === product.id); return exists ? current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }] }); setCartOpen(true) }
   function changeQuantity(id, amount) { setCart((current) => current.map((item) => item.id === id ? { ...item, quantity: item.quantity + amount } : item).filter((item) => item.quantity > 0)) }
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-  return <><Header cartCount={cartCount} onCartOpen={() => setCartOpen(true)}/><main><Hero/><ProductList onAdd={addToCart}/><Benefits/><About/><ContactForm/></main><Footer/><Cart open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} onRemove={(id) => setCart((current) => current.filter((item) => item.id !== id))}/></>
+  return <><ScrollToTop/><Header cartCount={cartCount} onCartOpen={() => setCartOpen(true)}/><main><Routes><Route path="/" element={<Home/>}/><Route path="/catalogo" element={<ProductList onAdd={addToCart}/>}/><Route path="/nosotros" element={<About/>}/><Route path="/contacto" element={<ContactForm/>}/><Route path="*" element={<NotFound/>}/></Routes></main><Footer/><Cart open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onChange={changeQuantity} onRemove={(id) => setCart((current) => current.filter((item) => item.id !== id))}/></>
 }
 
 export default App

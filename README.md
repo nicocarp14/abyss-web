@@ -9,12 +9,12 @@ npm install
 npm run dev
 ```
 
-## Estructura
+## Vistas
 
-- `src/pages/`: vistas Inicio, Catálogo, detalle de producto, Nosotros, Contacto y 404.
-- `src/components/`: navegación, layout, tarjetas, filtros, ilustración SVG, carrito y scroll-to-top.
-- `src/context/CartContext.jsx`: estado compartido de la bolsa, persistido en `localStorage`.
-- `src/data/products.js`: datos del catálogo.
-- `src/App.jsx`: definición de las rutas.
-- `src/main.jsx`: BrowserRouter y proveedor global del carrito.
-- `vercel.json`: rewrite para que las rutas de React Router funcionen al recargar en Vercel.
+- `/`: inicio y acceso al catálogo.
+- `/catalogo`: productos, filtros, ordenamiento y carrito.
+- `/nosotros`: manifiesto de la marca.
+- `/contacto`: formulario de contacto.
+- Cualquier otra ruta muestra una página 404.
+
+La navegación se gestiona con React Router. El carrito permanece compartido al cambiar de vista y se guarda en `localStorage`. En Vercel, `vercel.json` reescribe las rutas hacia la aplicación para que también funcionen al recargar una URL directamente.
