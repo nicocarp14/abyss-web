@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root { font-family: 'Inter', sans-serif; color: #fff; background: #0a0a0a; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; --orange: #ff5a00; --black: #0a0a0a; --white: #fff; --muted: #8b8987; --line: #282726; --display: 'Bebas Neue', Impact, sans-serif; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+body { margin: 0; min-width: 320px; }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--orange); color: white; }
